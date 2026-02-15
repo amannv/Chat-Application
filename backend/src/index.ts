@@ -47,6 +47,7 @@ wss.on("connection", (socket) => {
       }
 
       const users = roomToUsers.get(roomId);
+      console.log(users);
     }
   });
 });
