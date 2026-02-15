@@ -17,21 +17,26 @@ wss.on("connection", (socket) => {
           "username is " +
           parsedMessage.payload.username,
       );
+
+      const username = parsedMessage.payload.username;
+      const roomId = parsedMessage.payload.roomId;
+
+      socketToUser.set(socket, username);
+      userToroomId.set(username, roomId);
+
+      if (!roomToUsers.has(roomId)) {
+        roomToUsers.set(roomId, new Set());
+      }
+
+      const users = roomToUsers.get(roomId);
+      if (users) {
+        users.add(username);
+      }
     }
 
-    const username = parsedMessage.payload.username;
-    const roomId = parsedMessage.payload.roomId;
 
-    socketToUser.set(socket, username);
-    userToroomId.set(username, roomId);
-
-    if (!roomToUsers.has(roomId)) {
-      roomToUsers.set(roomId, new Set());
-    }
-
-    const users = roomToUsers.get(roomId);
-    if (users) {
-      users.add(username);
+    if (parsedMessage.type == "chat") {
+        
     }
   });
 });
