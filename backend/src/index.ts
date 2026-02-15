@@ -3,7 +3,7 @@ const wss = new WebSocketServer({ port: 8080 });
 
 const socketToUser = new Map<WebSocket, string>();
 const userToroomId = new Map<string, number>();
-const roomToUsers = new Map<number, Set<string>>();
+const roomToUsers = new Map<number, Set<WebSocket>>();
 
 wss.on("connection", (socket) => {
   socket.on("message", (message) => {
@@ -28,7 +28,7 @@ wss.on("connection", (socket) => {
 
       const users = roomToUsers.get(roomId);
       if (users) {
-        users.add(username);
+        users.add(socket);
       }
     }
 
@@ -37,17 +37,23 @@ wss.on("connection", (socket) => {
       const username = socketToUser.get(socket);
 
       if (!username) {
-        return console.log("User don't exist");
+        return console.error("User don't exist");
       }
 
       const roomId = userToroomId.get(username);
 
       if (!roomId) {
-        return console.log("Room not exists");
+        return console.error("Room not exists");
       }
 
       const users = roomToUsers.get(roomId);
-      console.log(users);
+
+      if(!users) {
+        return console.error("No users exists in the room");
+      }
+
+      console.log(chatMessage);
+      socket.send(chatMessage);
     }
   });
 });
