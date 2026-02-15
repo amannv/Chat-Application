@@ -11,11 +11,9 @@ wss.on("connection", (socket) => {
 
     if (parsedMessage.type == "join") {
       console.log(
-        "User joined this room " +
-          parsedMessage.payload.roomId +
-          " " +
-          "username is " +
-          parsedMessage.payload.username,
+        parsedMessage.payload.username +
+          " created and joined room with id " +
+          parsedMessage.payload.roomId,
       );
 
       const username = parsedMessage.payload.username;
@@ -34,9 +32,21 @@ wss.on("connection", (socket) => {
       }
     }
 
-
     if (parsedMessage.type == "chat") {
-        
+      const chatMessage = parsedMessage.payload.message;
+      const username = socketToUser.get(socket);
+
+      if (!username) {
+        return console.log("User don't exist");
+      }
+
+      const roomId = userToroomId.get(username);
+
+      if (!roomId) {
+        return console.log("Room not exists");
+      }
+
+      const users = roomToUsers.get(roomId);
     }
   });
 });
