@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 const wss = new WebSocketServer({ port: 8080 });
 
+
 const socketToRoomId = new Map<WebSocket, Number>();
 const roomToUsers = new Map<Number, Set<WebSocket>>();
 
@@ -9,7 +10,7 @@ wss.on("connection", (socket) => {
     const parsedMessage = JSON.parse(message as unknown as string);
 
     if (parsedMessage.type == "join") {
-      console.log("User joined room with id " + parsedMessage.payload.roomId);
+      console.log(parsedMessage.payload.username + " joined room with id " + parsedMessage.payload.roomId);
 
       const roomId = parsedMessage.payload.roomId;
 
@@ -27,6 +28,7 @@ wss.on("connection", (socket) => {
 
     if (parsedMessage.type == "chat") {
       const chatMessage = parsedMessage.payload.message;
+      const username = parsedMessage.payload.message; 
 
       const roomId = socketToRoomId.get(socket);
 
