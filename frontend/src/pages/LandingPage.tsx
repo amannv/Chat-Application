@@ -1,36 +1,55 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
+import BoxMessage from "../components/BoxMessage";
 
 const LandingPage = () => {
   const wsRef = useRef<WebSocket>(null);
   const roomInput = useRef<HTMLInputElement>(null);
+  const [roomCreatedId, setRoomCreatedId] = useState<number>();
   const usernameInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080");
     wsRef.current = ws;
-
-    return () => {
-      ws.close();
-    };
   }, []);
 
   const joinFunction = async () => {
     const username = usernameInput.current?.value;
     const roomId = roomInput.current?.value;
 
-    wsRef.current?.send(JSON.stringify({
-          type: "join",
-          payload: {
-            username: username,
-            roomId: roomId,
-          },
-        }),
-      );
+    wsRef.current?.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          username: username,
+          roomId: roomId,
+        },
+      }),
+    );
+  };
 
-      return roomId;
-    };
+  const generateRoomNumber = () => {
+    const min = 10000;
+    const max = 99999;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const createRoomFunction = async () => {
+    const username = usernameInput.current?.value;
+    const roomId = generateRoomNumber();
+
+    wsRef.current?.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          username: username,
+          roomId: roomId,
+        },
+      }),
+    );
+    setRoomCreatedId(roomId);
+  };
 
   return (
     <div className="h-screen max-w-md mx-auto flex justify-center items-center">
@@ -49,9 +68,21 @@ const LandingPage = () => {
             placeholder="Enter RoomId"
             classname="w-60"
           />
-          <Button onclick={joinFunction} placeholder="Join room" classname="w-40" />
+          <Button
+            onclick={joinFunction}
+            placeholder="Join room"
+            classname="w-40"
+          />
         </div>
-        <Button placeholder="Create chat room" classname="w-100" />
+        {roomCreatedId ? (
+          <BoxMessage message={roomCreatedId} />
+        ) : (
+          <Button
+            onclick={createRoomFunction}
+            placeholder="Create new chat room"
+            classname="w-100"
+          />
+        )}
       </div>
     </div>
   );
