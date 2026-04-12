@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import BoxMessage from "../components/BoxMessage";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
   const wsRef = useRef<WebSocket>(null);
   const roomInput = useRef<HTMLInputElement>(null);
   const [roomCreatedId, setRoomCreatedId] = useState<number>();
   const usernameInput = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080");
@@ -15,8 +17,15 @@ const LandingPage = () => {
   }, []);
 
   const joinFunction = async () => {
+    if (wsRef.current?.readyState !== 1) {
+      return console.error("Websocket is not connected!");
+    }
     const username = usernameInput.current?.value;
     const roomId = roomInput.current?.value;
+
+    if (!username && !roomId) {
+      return console.error("Username and RoomId is not given.");
+    }
 
     wsRef.current?.send(
       JSON.stringify({
@@ -27,6 +36,7 @@ const LandingPage = () => {
         },
       }),
     );
+    navigate("/chat");
   };
 
   const generateRoomNumber = () => {
@@ -35,19 +45,8 @@ const LandingPage = () => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  const createRoomFunction = async () => {
-    const username = usernameInput.current?.value;
+  const createRoomId = async () => {
     const roomId = generateRoomNumber();
-
-    wsRef.current?.send(
-      JSON.stringify({
-        type: "join",
-        payload: {
-          username: username,
-          roomId: roomId,
-        },
-      }),
-    );
     setRoomCreatedId(roomId);
   };
 
@@ -78,7 +77,7 @@ const LandingPage = () => {
           <BoxMessage message={roomCreatedId} />
         ) : (
           <Button
-            onclick={createRoomFunction}
+            onclick={createRoomId}
             placeholder="Create new chat room"
             classname="w-100"
           />
