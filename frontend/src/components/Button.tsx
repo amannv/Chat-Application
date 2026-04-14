@@ -5,7 +5,7 @@ const Button = ({ onclick, placeholder, classname }: ButtonProps) => {
   return (
     <div
       className={cn(
-        "flex justify-center items-center font-jetbrains w-80 h-12 bg-neutral-800 border border-neutral-700 text-white rounded-md cursor-pointer hover:bg-neutral-900",
+        "flex justify-center items-center font-jetbrains w-80 h-10 bg-neutral-700 border border-neutral-500 text-white rounded-sm cursor-pointer hover:bg-neutral-900 text-sm",
         classname,
       )}
     >

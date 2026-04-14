@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
-import BoxMessage from "../components/BoxMessage";
 import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
   const wsRef = useRef<WebSocket>(null);
   const roomInput = useRef<HTMLInputElement>(null);
-  const [roomCreatedId, setRoomCreatedId] = useState<number>();
   const usernameInput = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -39,49 +37,27 @@ const LandingPage = () => {
     navigate("/chat");
   };
 
-  const generateRoomNumber = () => {
-    const min = 10000;
-    const max = 99999;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const createRoomId = async () => {
-    const roomId = generateRoomNumber();
-    setRoomCreatedId(roomId);
-  };
-
   return (
-    <div className="h-screen max-w-md mx-auto flex justify-center items-center">
-      <div className="w-full flex flex-col justify-center items-center p-4 rounded-md bg-neutral-950 border border-neutral-900 gap-2">
+    <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
+      <div className="w-full flex flex-col justify-center items-center p-4 rounded-sm bg-neutral-950 border border-neutral-900 gap-2">
         <div className="text-l text-foreground mb-2 font-jetbrains font-semibold">
           Create your chat room
         </div>
         <InputBox
           ref={usernameInput}
-          placeholder="Enter your username"
-          classname="w-100"
+          placeholder="Enter your name"
+          classname="w-80"
         />
-        <div className="flex justify-center items-center gap-2 max-w-100">
-          <InputBox
-            ref={roomInput}
-            placeholder="Enter RoomId"
-            classname="w-60"
-          />
-          <Button
-            onclick={joinFunction}
-            placeholder="Join room"
-            classname="w-40"
-          />
-        </div>
-        {roomCreatedId ? (
-          <BoxMessage message={roomCreatedId} />
-        ) : (
-          <Button
-            onclick={createRoomId}
-            placeholder="Create new chat room"
-            classname="w-100"
-          />
-        )}
+        <InputBox
+          ref={roomInput}
+          placeholder="Any name for RoomId"
+          classname="w-80"
+        />
+        <Button
+          onclick={joinFunction}
+          placeholder="Join room"
+          classname="w-80"
+        />
       </div>
     </div>
   );
