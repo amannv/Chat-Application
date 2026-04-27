@@ -5,7 +5,8 @@ import SentMessage from "../components/SentMessage";
 import ReceiveMessage from "../components/ReceiveMessage";
 
 const ChatPage = () => {
-  return (
+  
+   return (
     <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
       <div className="bg-neutral-950 flex flex-col gap-3 items-center justify-center w-full h-[61vh] rounded border border-neutral-900 ">
         <div className="flex flex-col justify-center items-center gap-3">

@@ -7,7 +7,7 @@ const App = () => {
     <div className="h-screen w-full bg-black">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat"  element={<ChatPage />} />
         </Routes>
     </div>
   );

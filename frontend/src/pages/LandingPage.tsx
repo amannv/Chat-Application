@@ -21,7 +21,7 @@ const LandingPage = () => {
     const username = usernameInput.current?.value;
     const roomId = roomInput.current?.value;
 
-    if (!username && !roomId) {
+    if (!username || !roomId) {
       return console.error("Username and RoomId is not given.");
     }
 
@@ -34,13 +34,17 @@ const LandingPage = () => {
         },
       }),
     );
-    navigate("/chat");
+    navigate("/chat", {
+      state: { username, roomId },
+    });
   };
 
   return (
     <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
       <div className="w-full flex flex-col justify-center items-center p-4 rounded-sm bg-neutral-950 border border-neutral-900 gap-2">
-        <div className="text-white font-jetbrains text-2xl font-bold">Chat-Flow</div>
+        <div className="text-white font-jetbrains text-2xl font-bold">
+          Chat-App
+        </div>
         <div className="text-sm text-foreground mb-2 font-jetbrains">
           Real-time chat made simple
         </div>
