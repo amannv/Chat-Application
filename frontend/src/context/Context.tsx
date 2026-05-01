@@ -1,45 +1,59 @@
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type userContextType = {
-  username: string | undefined;
-  roomId: string | undefined;
+  username: string;
+  roomId: string;
   socket: WebSocket | null;
-  setUser: (username: string | undefined, roomId: string | undefined) => void;
+  setUser: (username: string, roomId: string) => void;
   connectSocket: () => void;
 };
 
-export const userContext = createContext<userContextType | undefined>(
-  undefined,
-);
+const UserContext = createContext<userContextType | undefined>(undefined);
 
-export const UserData = ({ children }: { children: React.ReactNode }) => {
-  const [username, setUsername] = useState<string | undefined>();
-  const [roomId, setRoomId] = useState<string | undefined>();
-  const socket = useRef<WebSocket | null>(null);
+export const UserDataProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [username, setUsername] = useState<string>("");
+  const [roomId, setRoomId] = useState<string>("");
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
-  const setUser = (
-    username: string,
-    roomId: string,
-  ) => {
-    if(!username && !roomId) return null;
+  useEffect(() => {
+    const username = localStorage.getItem("chat-user");
+    const roomId = localStorage.getItem("chat-room");
+    if (username && roomId) {
+      setUsername(username);
+      setRoomId(roomId);
+    }
+  }, []);
+
+  const setUser = (username: string, roomId: string) => {
     setUsername(username);
     setRoomId(roomId);
+    localStorage.setItem("chat-user", username);
+    localStorage.setItem("chat-room", roomId);
   };
 
   const connectSocket = () => {
-    if (socket.current == undefined) {
-    const ws = new WebSocket("ws://localhost:3000");
-    socket.current = ws;
-    } else {
-        return null;
+    if (!socket) {
+      const ws = new WebSocket("ws://localhost:3000");
+      setSocket(ws);
     }
   };
 
   return (
-    <userContext.Provider
-      value={{ username, roomId, setUser, socket.current, connectSocket }}
+    <UserContext.Provider
+      value={{ username, roomId, setUser, socket, connectSocket }}
     >
       {children}
-    </userContext.Provider>
+    </UserContext.Provider>
   );
+};
+
+export const useUser = () => {
+  const ctx = useContext(UserContext);
+  if (!ctx)
+    throw new Error("useUser must be used inside the UserData provider");
+  return ctx;
 };
