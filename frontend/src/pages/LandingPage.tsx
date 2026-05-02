@@ -1,23 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/Context";
 
 const LandingPage = () => {
-  const wsRef = useRef<WebSocket>(null);
   const roomInput = useRef<HTMLInputElement>(null);
   const usernameInput = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
-    wsRef.current = ws;
-  }, []);
-
-  const joinFunction = async () => {
-    if (wsRef.current?.readyState !== 1) {
-      return console.error("Websocket is not connected!");
-    }
+  const joinFunction = () => {
     const username = usernameInput.current?.value;
     const roomId = roomInput.current?.value;
 
@@ -25,18 +18,8 @@ const LandingPage = () => {
       return console.error("Username and RoomId is not given.");
     }
 
-    wsRef.current?.send(
-      JSON.stringify({
-        type: "join",
-        payload: {
-          username: username,
-          roomId: roomId,
-        },
-      }),
-    );
-    navigate("/chat", {
-      state: { username, roomId },
-    });
+    setUser(username, roomId);
+    navigate("/chat");
   };
 
   return (

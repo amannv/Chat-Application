@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type userContextType = {
+type UserContextType = {
   username: string;
   roomId: string;
   socket: WebSocket | null;
@@ -8,7 +8,7 @@ type userContextType = {
   connectSocket: () => void;
 };
 
-const UserContext = createContext<userContextType | undefined>(undefined);
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserDataProvider = ({
   children,
@@ -35,9 +35,9 @@ export const UserDataProvider = ({
     localStorage.setItem("chat-room", roomId);
   };
 
-  const connectSocket = () => {
+  const connectSocket = async () => {
     if (!socket) {
-      const ws = new WebSocket("ws://localhost:3000");
+      const ws = new WebSocket("ws://localhost:8080");
       setSocket(ws);
     }
   };
