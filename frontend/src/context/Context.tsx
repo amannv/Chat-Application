@@ -5,7 +5,7 @@ type UserContextType = {
   roomId: string;
   socket: WebSocket | null;
   setUser: (username: string, roomId: string) => void;
-  connectSocket: () => void;
+  connectSocket: () => WebSocket;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -35,11 +35,16 @@ export const UserDataProvider = ({
     localStorage.setItem("chat-room", roomId);
   };
 
-  const connectSocket = async () => {
-    if (!socket) {
-      const ws = new WebSocket("ws://localhost:8080");
-      setSocket(ws);
-    }
+  const connectSocket = () => {
+    const ws = new WebSocket("ws://localhost:8080");
+
+    ws.onopen = () => {
+      console.log("socket connected");
+    };
+
+    setSocket(ws);
+
+    return ws;
   };
 
   return (

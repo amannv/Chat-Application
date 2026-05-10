@@ -11,6 +11,7 @@ const InputBox = ({ placeholder, ref, classname }: InputBoxProps) => {
         )}
         placeholder={placeholder}
         ref={ref}
+        type="text"
       />
     </div>
   );
