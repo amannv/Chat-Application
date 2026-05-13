@@ -37,7 +37,14 @@ const ChatPage = () => {
     }
   }, [username, roomId]);
 
+
   useEffect(() => {
+    if (!username || !roomId) return;
+
+    if (hasJoined.current) return;
+
+    let ws = socket;
+
     const PayloadMessage = JSON.stringify({
       type: "join",
       payload: {
@@ -46,14 +53,11 @@ const ChatPage = () => {
       },
     });
 
-    if (!username || !roomId) return;
-
-    if (hasJoined.current) return;
-
-    let ws = socket;
-
-    if (!ws || ws?.readyState !== WebSocket.OPEN) {
+    if (!ws) {
       ws = connectSocket();
+    }
+
+    if (ws?.readyState !== WebSocket.OPEN) {
       ws.onopen = () => {
         ws?.send(PayloadMessage);
         hasJoined.current = true;
@@ -62,9 +66,10 @@ const ChatPage = () => {
       ws?.send(PayloadMessage);
       hasJoined.current = true;
     }
-  }, [username, roomId]);
+  }, [username, roomId, socket]);
 
-  useEffect(() => {
+  
+    useEffect(() => {
     if (!socket) return;
 
     socket.onmessage = (event) => {
@@ -83,6 +88,11 @@ const ChatPage = () => {
 
     if (!message?.trim()) return;
 
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      console.log("socket not connected yet!");
+      return;
+    }
+
     socket?.send(
       JSON.stringify({
         type: "chat",
@@ -97,10 +107,26 @@ const ChatPage = () => {
     }
   };
 
+  const LeaveRoom = () => {
+    socket?.close();
+    localStorage.removeItem("chat-user");
+    localStorage.removeItem("chat-room");
+    setUser("", "");
+    navigate("/");
+  };
+
   return (
     <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
       <div className="bg-neutral-950 flex flex-col gap-3 items-center justify-center w-full h-[61vh] rounded border border-neutral-900 ">
-        <div className="flex flex-col justify-center items-center gap-3">
+        <div className="flex flex-col justify-center items-center gap-2">
+          <div className="flex justify-between gap-15">
+            <div className="text-white">Room: {roomId}</div>
+            <Button
+              onclick={LeaveRoom}
+              placeholder={"Leave Room"}
+              classname="w-23 h-8 text-xs"
+            />
+          </div>
           <div className="w-78 rounded border border-neutral-900 bg-black h-90 p-2">
             <div className="flex flex-col gap-2 justify-between w-full overflow-y-scroll">
               {messages.map((msg, index) => {
