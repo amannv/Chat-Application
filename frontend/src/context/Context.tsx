@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 
 type UserContextType = {
   username: string;
@@ -18,6 +18,7 @@ export const UserDataProvider = ({
   const [username, setUsername] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const username = localStorage.getItem("chat-user");
@@ -36,12 +37,16 @@ export const UserDataProvider = ({
   };
 
   const connectSocket = () => {
+    if(socketRef.current) {
+      return socketRef.current;
+    }
     const ws = new WebSocket("ws://localhost:8080");
 
     ws.onopen = () => {
       console.log("socket connected");
     };
 
+    socketRef.current = ws;
     setSocket(ws);
 
     return ws;
