@@ -23,6 +23,7 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<MessageType[]>([]);
   const messageInput = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasJoined = useRef(false);
 
   useEffect(() => {
@@ -36,7 +37,6 @@ const ChatPage = () => {
       }
     }
   }, [username, roomId]);
-
 
   useEffect(() => {
     if (!username || !roomId) return;
@@ -68,13 +68,11 @@ const ChatPage = () => {
     }
   }, [username, roomId, socket]);
 
-  
-    useEffect(() => {
+  useEffect(() => {
     if (!socket) return;
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
       setMessages((prev) => [...prev, data]);
     };
 
@@ -82,6 +80,11 @@ const ChatPage = () => {
       socket.onmessage = null;
     };
   }, [socket]);
+
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = () => {
     const message = messageInput.current?.value;
@@ -115,20 +118,28 @@ const ChatPage = () => {
     navigate("/");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
-      <div className="bg-neutral-950 flex flex-col gap-3 items-center justify-center w-full h-[61vh] rounded border border-neutral-900 ">
-        <div className="flex flex-col justify-center items-center gap-2">
-          <div className="flex justify-between gap-15">
-            <div className="text-white">Room: {roomId}</div>
+    <div className="h-screen w-full max-w-md mx-auto px-4 flex justify-center items-center">
+      <div className="bg-white dark:bg-neutral-950 flex flex-col gap-3 items-center justify-center w-full h-[80vh] md:h-[70vh] rounded-md border border-gray-200 dark:border-neutral-900 shadow-sm p-4 transition-colors duration-200">
+        <div className="flex flex-col w-full h-full gap-4">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center gap-2 text-black dark:text-white font-jetbrains text-sm">
+              <span className="truncate max-w-[150px]">Room: {roomId}</span>
+            </div>
             <Button
               onclick={LeaveRoom}
-              placeholder={"Leave Room"}
-              classname="w-23 h-8 text-xs"
+              placeholder={"Leave"}
+              classname="w-20 h-8 text-xs bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 hover:bg-red-500/20 dark:hover:bg-red-500/20"
             />
           </div>
-          <div className="w-78 rounded border border-neutral-900 bg-black h-90 p-2">
-            <div className="flex flex-col gap-2 justify-between w-full overflow-y-scroll">
+          <div className="flex-1 w-full rounded-md border border-gray-200 dark:border-neutral-900 bg-gray-50 dark:bg-black p-3 overflow-hidden flex flex-col transition-colors duration-200">
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 w-full pr-1">
               {messages.map((msg, index) => {
                 if (msg.type == "join" || msg.type == "leave") {
                   return <AlertMessage key={index} message={msg.message} />;
@@ -153,15 +164,17 @@ const ChatPage = () => {
                   );
                 }
               })}
+              <div ref={messagesEndRef} />
             </div>
           </div>
-          <div className="flex justify-center items-center gap-2 max-w-78">
+          <div className="flex w-full items-center gap-2 mt-1">
             <InputBox
               ref={messageInput}
-              placeholder="Enter your message."
-              classname="w-60"
+              placeholder="Message..."
+              classname="flex-1 w-full"
+              onKeyDown={handleKeyDown}
             />
-            <Button onclick={sendMessage} placeholder="Send" classname="w-18" />
+            <Button onclick={sendMessage} placeholder="Send" classname="w-20 h-10" />
           </div>
         </div>
       </div>

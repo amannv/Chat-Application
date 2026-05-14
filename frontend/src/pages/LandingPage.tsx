@@ -22,29 +22,37 @@ const LandingPage = () => {
     navigate("/chat");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      joinFunction();
+    }
+  };
+
   return (
-    <div className="h-screen max-w-[23vw] mx-auto flex justify-center items-center">
-      <div className="w-full flex flex-col justify-center items-center p-4 rounded-sm bg-neutral-950 border border-neutral-900 gap-2">
-        <div className="text-white font-jetbrains text-2xl font-bold">
+    <div className="h-screen w-full max-w-md mx-auto px-4 flex justify-center items-center">
+      <div className="w-full flex flex-col justify-center items-center p-6 rounded-md bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-900 gap-3 shadow-sm transition-colors duration-200">
+        <div className="text-black dark:text-white font-jetbrains text-2xl font-bold">
           Chat-App
         </div>
-        <div className="text-sm text-foreground mb-2 font-jetbrains">
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 font-jetbrains">
           Real-time chat made simple
         </div>
         <InputBox
           ref={usernameInput}
           placeholder="Enter your name"
-          classname="w-80"
+          classname="w-full"
+          onKeyDown={handleKeyDown}
         />
         <InputBox
           ref={roomInput}
           placeholder="Any name for RoomId"
-          classname="w-80"
+          classname="w-full"
+          onKeyDown={handleKeyDown}
         />
         <Button
           onclick={joinFunction}
           placeholder="Join room"
-          classname="w-80"
+          classname="w-full"
         />
       </div>
     </div>
