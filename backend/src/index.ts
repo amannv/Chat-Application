@@ -81,6 +81,7 @@ wss.on("connection", (socket) => {
       }
 
       const message = {
+        id: crypto.randomUUID(),
         type: "chat",
         username: username,
         message: chatMessage,
