@@ -47,6 +47,7 @@ wss.on("connection", (socket) => {
       }
 
       const joinMessage = {
+        id: crypto.randomUUID(),
         type: "join",
         message: `${username} joined`,
       };
@@ -121,6 +122,7 @@ wss.on("connection", (socket) => {
     socketToRoomId.delete(socket);
 
     const leaveMessage = {
+      id: crypto.randomUUID(),
       type: "leave",
       message: `${username} left the room`,
     };
